@@ -21,56 +21,32 @@
         <div id="content">
           <router-link to="#" style="background-color: #90e0ef">
             <!-- svg image -->
-            <img
-              src="../../assets/images/dashboard/coins_img.svg"
-              alt=""
-              srcset=""
-            />
+            <img src="../assets/images/coins_img.svg" alt="" srcset="" />
             <h4>Coins</h4>
           </router-link>
           <router-link to="#" style="background-color: #0077b6">
-            <img
-              src="../../assets/images/dashboard/card_img.svg"
-              alt=""
-              srcset=""
-            />
+            <img src="../assets/images/card_img.svg" alt="" srcset="" />
             <!-- svg image -->
             <h4>Card</h4>
           </router-link>
           <router-link to="#" style="background-color: #219ebc">
             <!-- svg image -->
-            <img
-              src="../../assets/images/dashboard/article_img.svg"
-              alt=""
-              srcset=""
-            />
+            <img src="../assets/images/article_img.svg" alt="" srcset="" />
             <h4>Articles</h4>
           </router-link>
           <router-link to="#" style="background-color: #023e8a">
             <!-- svg image -->
-            <img
-              src="../../assets/images/dashboard/resources_img.svg"
-              alt=""
-              srcset=""
-            />
+            <img src="../assets/images/resources_img.svg" alt="" srcset="" />
             <h4>Resouces</h4>
           </router-link>
           <router-link to="#" style="background-color: #a9d6e5">
             <!-- svg image -->
-            <img
-              src="../../assets/images/dashboard/users_img.svg"
-              alt=""
-              srcset=""
-            />
+            <img src="../assets/images/users_img.svg" alt="" srcset="" />
             <h4>Users</h4>
           </router-link>
           <router-link to="#" style="background-color: #014f86">
             <!-- svg image -->
-            <img
-              src="../../assets/images/dashboard/tawk_img.svg"
-              alt=""
-              srcset=""
-            />
+            <img src="../assets/images/tawk_img.svg" alt="" srcset="" />
             <h4>Go to tawk</h4>
           </router-link>
         </div>
@@ -80,8 +56,8 @@
 </template>
 
 <script>
-import dashNav from "../../components/dashboardComponents/navigation-component.vue";
-import dashSide from "../../components/dashboardComponents/sidebar-component.vue";
+import dashNav from "../components/navigation-component.vue";
+import dashSide from "../components/sidebar-component.vue";
 export default {
   name: "dashboardHome",
   components: {

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
-import dashHome from "../views/dashboard/dashHome.vue";
-import dashUsers from "../views/dashboard/dashUsers.vue";
-import dashCoin from "../views/dashboard/dashCoin.vue";
+import dashHome from "../views/dashHome.vue";
+import dashUsers from "../views/dashUsers.vue";
+import dashCoin from "../views/dashCoin.vue";
 
 const routes = [
   {

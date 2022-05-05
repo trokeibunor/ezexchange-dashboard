@@ -2,55 +2,31 @@
   <aside id="sidebar">
     <div class="top-section">
       <!-- Full logo -->
-      <img src="../../assets/images/Logo.svg" alt="" srcset="" />
+      <img src="../assets/images/Logo.svg" alt="" srcset="" />
     </div>
     <ul class="nav-list">
-      <router-link to="/dashboard">
-        <img
-          src="../../assets/images/dashboard/dash_icon.svg"
-          alt=""
-          srcset=""
-        />
+      <router-link to="/">
+        <img src="../assets/images/dash_icon.svg" alt="" srcset="" />
         Dashboard
       </router-link>
-      <router-link to="/dashboard/users"
-        ><img
-          src="../../assets/images/dashboard/dash_users.svg"
-          alt=""
-          srcset=""
-        />
+      <router-link to="/users"
+        ><img src="../assets/images/dash_users.svg" alt="" srcset="" />
         Users
       </router-link>
-      <router-link to="/dashboard/coin">
-        <img
-          src="../../assets/images/dashboard/dash_coin.svg"
-          alt=""
-          srcset=""
-        />Coins
+      <router-link to="/coin">
+        <img src="../assets/images/dash_coin.svg" alt="" srcset="" />Coins
       </router-link>
-      <router-link to="/dashboard/card">
-        <img
-          src="../../assets/images/dashboard/dash_card.svg"
-          alt=""
-          srcset=""
-        />
+      <router-link to="/card">
+        <img src="../assets/images/dash_card.svg" alt="" srcset="" />
         Cards
       </router-link>
-      <router-link to="/dashboard/articles"
-        ><img
-          src="../../assets/images/dashboard/dash_art.svg"
-          alt=""
-          srcset=""
-        />
+      <router-link to="/articles"
+        ><img src="../assets/images/dash_art.svg" alt="" srcset="" />
         Articles</router-link
       >
-      <router-link to="/dashboard/articles"
-        ><img
-          src="../../assets/images/dashboard/dash_tawk.svg"
-          alt=""
-          srcset=""
-        />
-        Tawk Dashboard</router-link
+      <router-link to="#"
+        ><img src="../assets/images/dash_tawk.svg" alt="" srcset="" /> Tawk
+        Dashboard</router-link
       >
     </ul>
   </aside>

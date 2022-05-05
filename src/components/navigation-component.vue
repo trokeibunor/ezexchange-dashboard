@@ -5,7 +5,7 @@
       <button>
         <!-- Hamburger image -->
         <img
-          src="../../assets/images/dashboard/dashHam.svg
+          src="../assets/images/dashHam.svg
           "
           alt=""
           srcset=""
@@ -16,7 +16,7 @@
     <div class="second">
       <h4>Okeibunor Emmanuel</h4>
       <!-- Ez logo -->
-      <img src="../../assets/images/dashboard/logo_icon.svg" alt="" srcset="" />
+      <img src="../assets/images/logo_icon.svg" alt="" srcset="" />
     </div>
   </nav>
 </template>

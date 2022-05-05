@@ -151,8 +151,8 @@
 </template>
 
 <script>
-import dashNav from "../../components/dashboardComponents/navigation-component.vue";
-import dashSide from "../../components/dashboardComponents/sidebar-component.vue";
+import dashNav from "../components/navigation-component.vue";
+import dashSide from "../components/sidebar-component.vue";
 
 export default {
   name: "dashUsers",
