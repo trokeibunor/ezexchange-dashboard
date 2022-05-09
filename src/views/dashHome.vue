@@ -72,6 +72,7 @@ export default {
   display: grid;
   grid-template-columns: 20% 1fr;
   width: 100%;
+  min-height: 100vh;
 }
 .dash-hero {
   width: 100%;

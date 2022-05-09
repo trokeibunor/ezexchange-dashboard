@@ -1,0 +1,12 @@
+// Define variable defaults
+
+// Then import Bootstrap and BootstrapVue SCSS files (order is important)
+// @import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
+@import "../node_modules/bootstrap/scss/images";
+@import "../node_modules/bootstrap/scss/grid";
+@import "../node_modules//bootstrap/scss/forms";
+@import "../node_modules/bootstrap/scss/tables";
+@import "../node_modules/bootstrap-vue-3/src/styles/styles.scss";
