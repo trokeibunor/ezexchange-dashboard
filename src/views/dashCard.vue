@@ -4,71 +4,54 @@
       <!-- sidebar -->
       <dash-side />
       <div class="content-holder">
-        <!-- nav component -->
+        <!-- nav-component -->
         <dash-nav />
         <!-- content -->
         <div class="content">
           <div class="intro">
-            <h3>Coins</h3>
-            <p>You should be able to add coins to your database from here</p>
+            <h3>Gift Cards</h3>
+            <p>
+              You should be able to add GiftCards to your database from here
+            </p>
           </div>
           <div class="reveal-box">
-            <!-- number-->
+            <!-- number -->
             <p>You trade a total of:</p>
-            <h1>23 coins</h1>
+            <h1>15 GiftCards</h1>
           </div>
-          <!-- grid holding table and add new coin -->
+          <!-- Grid holding table and add new Card -->
           <div class="grid-holder">
             <div class="table-holder">
-              <h3>Coins Table</h3>
+              <h3>Cards Table</h3>
               <!-- bootstrap table -->
-              <b-table
-                responsive
-                striped
-                hover
-                :items="items"
-                :fields="fields"
-              ></b-table>
+              <b-table responsive striped hover :items="items"> </b-table>
             </div>
             <div class="other-holder">
-              <div class="add-coin">
-                <h3>Add New Coin</h3>
+              <div class="add-card">
+                <h3>Add New Card</h3>
                 <b-form>
                   <b-form-group
                     id="input-group"
-                    label="Coin Name:"
+                    label="Card Name:"
                     label-for="input-1"
-                    description="Examples : 'Bitcoin', 'Ethereum' etc"
+                    description="Examples : 'Apple', 'Paypal',  etc"
                   >
                     <b-form-input
                       id="input-1"
                       type="text"
-                      placeholder="Enter Coin Name"
-                      required
-                    ></b-form-input>
-                  </b-form-group>
-                  <b-form-group
-                    id="input-group"
-                    label="Coin Code:"
-                    label-for="input-1"
-                    description="Examples : 'BTC', 'ETH' etc"
-                  >
-                    <b-form-input
-                      id="input-1"
-                      type="text"
-                      placeholder="Enter Coin Code"
+                      placeholder="Enter Card Name"
                       required
                     ></b-form-input>
                   </b-form-group>
                   <div>
-                    <label for="coinLogo">Coin Logo</label>
+                    <label for="cardLogo">Card Logo</label>
                     <input
                       type="file"
                       class="form-control"
                       @change="handleUpload"
-                      id="coinLogo"
-                      :state="Boolean(coinLogo)"
-                      placeholder="Please Upload coin logo"
+                      id="cardLogo"
+                      :state="Boolean(cardLogo)"
+                      placeholder="Please Upload Card logo"
                       drop-placeholder="Drop file here..."
                     />
                   </div>
@@ -77,11 +60,11 @@
                       id="input-group-1"
                       label="Buy Price"
                       label-for="input-1"
-                      description="This is what would appear as the Sell price to the End User"
+                      description="End Users would redeem at this price"
                     >
                       <b-form-input
                         id="input-1"
-                        v-model="form.coinSellPrice"
+                        v-model="form.CardSellPrice"
                         type="number"
                         placeholder="Price in USD"
                         required
@@ -91,11 +74,11 @@
                       id="input-group-2"
                       label="Sell Price"
                       label-for="input-1"
-                      description="This is what would appear as the Buy price to the End user"
+                      description="End Users would sell at this price"
                     >
                       <b-form-input
                         id="input-1"
-                        v-model="form.coinBuyPrice"
+                        v-model="form.CardBuyPrice"
                         type="number"
                         placeholder="Enter Price in USD"
                         required
@@ -117,64 +100,38 @@
 import dashNav from "../components/navigation-component.vue";
 import dashSide from "../components/sidebar-component.vue";
 export default {
-  name: "dashCoin",
+  name: "dashCard",
   data() {
     return {
-      fields: ["name", "code", "sell_Price", "buy_Price", "actions"],
       items: [
         {
-          name: "Bitcoin",
-          code: "BTC",
-          sell_Price: "540" + "USD",
-          buy_Price: "480" + "USD",
-          actions: "",
+          age: 40,
+          first_name: "Dickerson",
+          last_name: "Macdonald",
+          action: "action",
         },
+        { age: 21, first_name: "Larsen", last_name: "Shaw", action: "action" },
         {
-          name: "Ethereum",
-          code: "ETH",
-          sell_Price: "540" + "USD",
-          buy_Price: "480" + "USD",
-          actions: "",
+          age: 89,
+          first_name: "Geneva",
+          last_name: "Wilson",
+          action: "action",
         },
-        {
-          name: "Binance Token",
-          code: "BNB",
-          sell_Price: "540" + "USD",
-          buy_Price: "480" + "USD",
-          actions: "",
-        },
-        {
-          name: "Solana",
-          code: "SOL",
-          sell_Price: "540" + "USD",
-          buy_Price: "480" + "USD",
-          actions: "",
-        },
+        { age: 38, first_name: "Jami", last_name: "Carney", action: "action" },
       ],
       form: {
-        coinName: "",
-        coinCode: "",
-        fetcher: `${this.coinCode}+USD`,
-        coinSellPrice: "",
-        coinBuyPrice: "",
+        CardName: "",
+        CardCode: "",
+        fetcher: `${this.cardCode}+USD`,
+        CardSellPrice: "",
+        CardBuyPrice: "",
       },
-      coinLogo: undefined,
+      CardLogo: undefined,
     };
   },
   components: {
     dashNav,
     dashSide,
-  },
-  methods: {
-    handleUpload(e) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-
-      reader.onload = function () {
-        console.log(file);
-      };
-    },
   },
 };
 </script>
@@ -203,6 +160,7 @@ export default {
     background-color: #023e8a;
     border-radius: 8px;
     display: flex;
+    margin-top: 16px;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
@@ -241,7 +199,7 @@ export default {
       }
     }
     .other-holder {
-      .add-coin {
+      .add-card {
         width: 95%;
         text-align: left;
         #input-group {

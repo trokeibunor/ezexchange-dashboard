@@ -43,7 +43,7 @@ aside {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #100d5e;
+  background-color: #023e8a;
   .top-section {
     margin: 0;
     padding: 0px;

@@ -1,0 +1,332 @@
+<template>
+  <div>
+    <div class="fixed-content">
+      <!-- sidebar -->
+      <dash-side />
+      <div class="content-holder">
+        <!-- nav-component -->
+        <dash-nav />
+        <div id="content-holder">
+          <!-- Auxillary side bar -->
+          <div class="aux-sidebar">
+            <div class="mover">
+              <font-awesome-icon
+                icon="arrow-left"
+                @click="reduceMenu"
+                v-show="menu"
+              />
+              <font-awesome-icon
+                icon="arrow-right"
+                id="rightArrow"
+                @click="openMenu"
+                v-show="!menu"
+              />
+            </div>
+            <ul class="aux-menu" v-show="menu">
+              <li
+                class="aux-item"
+                id="article"
+                v-show="menu"
+                :class="{ active: isActive }"
+                @click="
+                  currentContent = true;
+                  changeActive();
+                "
+              >
+                Articles
+              </li>
+              <li
+                class="aux-item"
+                id="resources"
+                v-show="menu"
+                :class="{ active: !isActive }"
+                @click="
+                  currentContent = false;
+                  changeActive();
+                "
+              >
+                Resource
+              </li>
+            </ul>
+          </div>
+          <!-- content -->
+          <div class="content">
+            <!-- Articles Content -->
+            <div id="article_content" v-if="currentContent">
+              <div id="article_intro">
+                <h2>Articles</h2>
+                <p>You can add edit and delete articles from this section</p>
+              </div>
+              <button class="addNew" @click="openArticle">
+                {{ articleButton }}
+              </button>
+              <div id="article-table" v-show="!articleFormContent">
+                <h4>Article List</h4>
+                <b-table striped hover :items="article"></b-table>
+              </div>
+              <div id="add-article" v-show="articleFormContent">
+                <form action="#" id="article-form">
+                  <h4>Ariticle Form</h4>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Title"
+                    v-model="articleForm.title"
+                  />
+                  <input type="file" class="form-control" />
+                  <QuillEditor theme="snow" />
+                  <button id="submitArticle" @click="submitArticle">
+                    Submit Ariticle
+                  </button>
+                </form>
+              </div>
+            </div>
+            <!-- Resources Content -->
+            <div id="resources_content" v-else>
+              <div id="resources_intro">
+                <h2>Resources</h2>
+                <p>You can add edit and delete Resources from this section</p>
+              </div>
+              <button class="addNew" @click="openResource">
+                {{ resourceButton }}
+              </button>
+              <div id="article-table" v-show="!resourceFormContent">
+                <h4>Resources List</h4>
+                <b-table striped hover :items="resource"></b-table>
+              </div>
+              <div id="add-article" v-show="resourceFormContent">
+                <form action="#" id="resource-form">
+                  <h4>Resource Form</h4>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Title"
+                    v-model="resourceForm.title"
+                  />
+                  <input type="file" class="form-control" />
+                  <QuillEditor theme="snow" />
+                  <button id="submitArticle" @click="addResource">
+                    Add Resource
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import dashSide from "../components/sidebar-component.vue";
+import dashNav from "../components/navigation-component.vue";
+import { QuillEditor } from "@vueup/vue-quill";
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
+export default {
+  name: "dashAriticle",
+  data() {
+    return {
+      currentContent: true,
+      isActive: true,
+      articleButton: "Add New",
+      resourceButton: "Add New",
+      menu: true,
+      article: [
+        { age: 40, first_name: "Dickerson", last_name: "Macdonald" },
+        { age: 21, first_name: "Larsen", last_name: "Shaw" },
+        { age: 89, first_name: "Geneva", last_name: "Wilson" },
+        { age: 38, first_name: "Jami", last_name: "Carney" },
+      ],
+      articleForm: {
+        title: "New Title",
+      },
+      articleFormContent: false,
+      resource: [
+        { age: 40, first_name: "Dickerson", last_name: "Macdonald" },
+        { age: 21, first_name: "Larsen", last_name: "Shaw" },
+        { age: 89, first_name: "Geneva", last_name: "Wilson" },
+        { age: 38, first_name: "Jami", last_name: "Carney" },
+      ],
+      resourceForm: {
+        title: "New Title",
+      },
+      resourceFormContent: false,
+    };
+  },
+  components: {
+    dashSide,
+    dashNav,
+    QuillEditor,
+  },
+  methods: {
+    reduceMenu() {
+      var aux_sidebar = document.querySelector(".aux-sidebar");
+      var aux_menu = document.querySelector(".aux-menu");
+      var content_holder = document.querySelector("#content-holder");
+      content_holder.style.gridTemplateColumns = "0% 1fr";
+      aux_menu.style.width = "0%";
+      aux_sidebar.style.width = "0%";
+      this.menu = false;
+    },
+    openMenu() {
+      var aux_sidebar = document.querySelector(".aux-sidebar");
+      var aux_menu = document.querySelector(".aux-menu");
+      var content_holder = document.querySelector("#content-holder");
+      content_holder.style.gridTemplateColumns = "20% 1fr";
+      aux_menu.style.width = "100%";
+      aux_sidebar.style.width = "100%";
+      this.menu = true;
+    },
+    openArticle() {
+      this.articleFormContent = !this.articleFormContent;
+      if (this.articleButton == "Go Back") {
+        this.articleButton = "Add New";
+      } else if (this.articleButton == "Add New") {
+        this.articleButton = "Go Back";
+      }
+    },
+    openResource() {
+      this.resourceFormContent = !this.resourceFormContent;
+      if (this.resourceButton == "Go Back") {
+        this.resourceButton = "Add New";
+      } else if (this.resourceButton == "Add New") {
+        this.resourceButton = "Go Back";
+      }
+    },
+    changeActive() {
+      this.isActive = this.currentContent;
+    },
+    submitAriticle() {},
+    addResource() {},
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+h1,
+h2,
+h3,
+h4,
+p,
+li {
+  margin: 0px;
+  padding: 0px;
+}
+.fixed-content {
+  display: grid;
+  grid-template-columns: 20% 1fr;
+  width: 100%;
+  min-height: 100vh;
+}
+.addNew {
+  background-color: #fff;
+  color: #111;
+  padding: 8px 16px;
+  border-radius: 5px;
+  border: 1px solid #118ab2;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+#content-holder {
+  display: grid;
+  grid-template-columns: 20% 1fr;
+  width: 100%;
+  text-align: left;
+}
+.aux-sidebar {
+  width: 100%;
+  background-color: #a2d2ff;
+  min-height: 100vh;
+  .mover {
+    padding-right: 8px;
+    margin-bottom: 8px;
+    height: 32px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    #rightArrow {
+      position: relative;
+      left: 16px;
+      background-color: #fff;
+      border-radius: 50px;
+      z-index: 10;
+      box-shadow: 0px 4px 10px 4px #11111128;
+      padding: 8px;
+    }
+  }
+  .aux-menu {
+    text-align: left;
+    list-style: none;
+    width: 100%;
+    margin: 0px;
+    li {
+      line-height: 140%;
+      font-size: 18px;
+      font-weight: 500;
+      margin: 0px;
+      padding: 8px;
+    }
+    :hover {
+      background-color: #fff;
+    }
+    li.active {
+      background-color: #fff;
+    }
+  }
+}
+.content {
+  padding: 8px;
+}
+#article_content {
+  #article_intro {
+    margin-bottom: 16px;
+  }
+  #article-form {
+    width: 80%;
+    margin: 16px auto;
+    input {
+      margin: 8px 0px;
+    }
+    input[type="text"],
+    input[type="file"] {
+      width: 96%;
+    }
+    #submitArticle {
+      border: none;
+      border-radius: 5px;
+      padding: 8px 16px;
+      background-color: #118ab2;
+      color: white;
+      margin-top: 16px;
+    }
+  }
+}
+#resources_content {
+  #resources_intro {
+    margin-bottom: 16px;
+  }
+}
+#resource-form {
+  width: 80%;
+  margin: 16px auto;
+  input {
+    margin: 8px 0px;
+  }
+  input[type="text"],
+  input[type="file"] {
+    width: 96%;
+  }
+}
+#submitArticle {
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  background-color: #118ab2;
+  color: white;
+  margin-top: 16px;
+}
+active {
+  background-color: #fff;
+}
+</style>
