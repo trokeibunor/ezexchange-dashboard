@@ -4,7 +4,8 @@ import dashUsers from "../views/dashUsers.vue";
 import dashCoin from "../views/dashCoin.vue";
 import dashCard from "../views/dashCard.vue";
 import dashArticle from "../views/dashArticle.vue";
-
+import signUp from "../views/adminSignUp.vue";
+import addAdmin from "../views/addAdmin.vue";
 const routes = [
   {
     path: "/",
@@ -30,6 +31,16 @@ const routes = [
     path: "/articles",
     name: "dashArticles",
     component: dashArticle,
+  },
+  {
+    path: "/signUp",
+    name: "signUp",
+    component: signUp,
+  },
+  {
+    path: "/add-admin",
+    name: "addAdmin",
+    component: addAdmin,
   },
 ];
 

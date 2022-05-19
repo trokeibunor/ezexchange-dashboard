@@ -22,6 +22,7 @@
     "core-js": "^3.8.3",
     "firebase": "^9.8.0",
     "vue-router": "^4.0.3",
+    "vue-toastification": "^2.0.0-rc.5",
     "vue-wysiwyg": "^1.7.2",
     "vuex": "^4.0.0"
   },
