@@ -18,7 +18,7 @@
           </label>
           <input type="password" v-model="form.password" />
         </div>
-        <button @click="login()">
+        <button @click="login">
           <font-awesome-icon icon="sign-in" /> Login to Dashboard
         </button>
       </form>
@@ -41,8 +41,9 @@ export default {
     };
   },
   methods: {
-    login() {
+    login(e) {
       this.$store.dispatch("admin/login", this.form);
+      e.preventDefault();
     },
   },
 };

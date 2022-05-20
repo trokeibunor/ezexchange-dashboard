@@ -14,7 +14,10 @@
       <h4>Admin Dashboard</h4>
     </div>
     <div class="second">
-      <h4>Okeibunor Emmanuel</h4>
+      <h4 @click="logBox">{{ name }}</h4>
+      <div class="logBox" v-if="logger">
+        <a @click="logOut">Log Out</a>
+      </div>
       <!-- Ez logo -->
       <img src="../assets/images/logo_icon.svg" alt="" srcset="" />
     </div>
@@ -24,6 +27,23 @@
 <script>
 export default {
   name: "dashNav",
+  data() {
+    return {
+      name: "",
+      logger: false,
+    };
+  },
+  methods: {
+    logBox() {
+      this.logger = !this.logger;
+    },
+    logOut() {
+      this.$store.dispatch("admin/logOut");
+    },
+  },
+  mounted() {
+    this.name = this.$store.state.admin.name;
+  },
 };
 </script>
 
@@ -55,6 +75,32 @@ nav {
       max-width: 42px;
       max-height: 42px;
       margin-left: 4px;
+    }
+    h4 {
+      cursor: pointer;
+    }
+    h4:hover {
+      color: #3a86ff;
+    }
+    .logBox {
+      position: relative;
+      z-index: 10;
+      top: 32px;
+      right: 10px;
+      background: #fff;
+      padding: 8px 16px;
+      border-radius: 4px;
+      box-shadow: 0px 1px 4px #3a85ff38;
+      height: fit-content;
+      a {
+        padding: 0px;
+        margin: 0px;
+        height: fit-content;
+        cursor: pointer;
+      }
+      a:hover {
+        color: #3a86ff;
+      }
     }
   }
   div {

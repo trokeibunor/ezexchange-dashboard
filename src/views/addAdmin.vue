@@ -1,5 +1,6 @@
 <template>
   <div id="wrapper">
+    <img src="../assets/images/Logo.svg" alt="" srcset="" />
     <div class="password-block" v-if="!seeContent">
       <p>This is a restricted page, please enter password</p>
       <input type="password" placeholder="Enter Password" v-model="password" />
@@ -29,7 +30,7 @@
           </label>
           <input type="password" v-model="form.password" />
         </div>
-        <button @click="register()">
+        <button @click="register">
           <font-awesome-icon icon="sign-in" /> Create Admin
         </button>
       </form>
@@ -57,7 +58,9 @@ export default {
         this.seeContent = true;
       }
     },
-    register() {},
+    register() {
+      this.$store.dispatch("admin/register", this.form);
+    },
   },
 };
 </script>

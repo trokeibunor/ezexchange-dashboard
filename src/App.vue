@@ -1,7 +1,23 @@
 <template>
   <router-view />
 </template>
-
+<script>
+export default {
+  created() {
+    var adminDetail = this.$store.state.admin;
+    adminDetail.name = localStorage.getItem("adminName");
+    adminDetail.email = localStorage.getItem("adminEmail");
+    adminDetail.loggedIn = localStorage.getItem("loggedIn");
+    if (
+      adminDetail.loggedIn == false ||
+      adminDetail == null ||
+      adminDetail.loggedIn == "false"
+    ) {
+      this.$router.push("/signUp");
+    }
+  },
+};
+</script>
 <style lang="scss">
 body {
   margin: 0px;
