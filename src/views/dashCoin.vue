@@ -41,9 +41,9 @@
                     description="Examples : 'Bitcoin', 'Ethereum' etc"
                   >
                     <b-form-input
-                      id="input-1"
                       type="text"
                       placeholder="Enter Coin Name"
+                      v-model="form.coinName"
                       required
                     ></b-form-input>
                   </b-form-group>
@@ -54,10 +54,10 @@
                     description="Examples : 'BTC', 'ETH' etc"
                   >
                     <b-form-input
-                      id="input-1"
                       type="text"
                       placeholder="Enter Coin Code"
                       required
+                      v-model="form.coinCode"
                     ></b-form-input>
                   </b-form-group>
                   <div>
@@ -80,7 +80,6 @@
                       description="This is what would appear as the Sell price to the End User"
                     >
                       <b-form-input
-                        id="input-1"
                         v-model="form.coinSellPrice"
                         type="number"
                         placeholder="Price in USD"
@@ -94,7 +93,6 @@
                       description="This is what would appear as the Buy price to the End user"
                     >
                       <b-form-input
-                        id="input-1"
                         v-model="form.coinBuyPrice"
                         type="number"
                         placeholder="Enter Price in USD"
@@ -102,7 +100,9 @@
                       ></b-form-input>
                     </b-form-group>
                   </div>
-                  <b-button type="submit" variant="primary">Submit</b-button>
+                  <b-button @click="submitCoin" variant="primary"
+                    >Submit</b-button
+                  >
                 </b-form>
               </div>
             </div>
@@ -154,9 +154,9 @@ export default {
       form: {
         coinName: "",
         coinCode: "",
-        fetcher: `${this.coinCode}+USD`,
         coinSellPrice: "",
         coinBuyPrice: "",
+        file: "",
       },
       coinLogo: undefined,
     };
@@ -167,14 +167,20 @@ export default {
   },
   methods: {
     handleUpload(e) {
+      const self = this;
       const file = e.target.files[0];
       const reader = new FileReader();
       reader.readAsArrayBuffer(file);
-
       reader.onload = function () {
-        console.log(file);
+        self.form.file = reader.result;
       };
     },
+    submitCoin() {
+      this.$store.dispatch("coins/postCoins", this.form);
+    },
+  },
+  mounted() {
+    console.log(this.form);
   },
 };
 </script>
