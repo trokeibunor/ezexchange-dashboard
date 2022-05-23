@@ -86,6 +86,7 @@
                     label="Coin Code:"
                     label-for="input-1"
                     description="Examples : 'BTC', 'ETH' etc"
+                    :disabled="notEditing"
                   >
                     <b-form-input
                       type="text"
@@ -211,8 +212,9 @@ export default {
     },
     del(event) {
       var theItem = event.target.id;
-      confirm(`Are you sure you want to delete ${theItem}`);
-      this.$store.dispatch("coins/deleteCoin", theItem);
+      if (confirm(`Are you sure you want to delete ${theItem}`)) {
+        this.$store.dispatch("coins/deleteCoin", theItem);
+      }
     },
   },
   computed: {
@@ -290,6 +292,9 @@ export default {
         position: sticky;
         top: 0;
       }
+      tr {
+        cursor: pointer;
+      }
       .action-box {
         position: relative;
         right: 20;
@@ -339,6 +344,10 @@ export default {
           background-color: #0077b6;
           color: white;
           margin-top: 16px;
+          cursor: pointer;
+        }
+        button[type="submit"]:hover {
+          background-color: #0076b6b4;
         }
       }
     }

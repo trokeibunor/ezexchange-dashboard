@@ -55,6 +55,18 @@
                       drop-placeholder="Drop file here..."
                     />
                   </div>
+                  <div>
+                    <label for="cardLogo">Card Logo</label>
+                    <input
+                      type="file"
+                      class="form-control"
+                      @change="handleSecondUpload"
+                      id="cardLogo"
+                      :state="Boolean(CardImage)"
+                      placeholder="Please Upload Card Image"
+                      drop-placeholder="Drop file here..."
+                    />
+                  </div>
                   <div class="form-row">
                     <b-form-group
                       id="input-group-1"
@@ -121,13 +133,37 @@ export default {
       ],
       form: {
         CardName: "",
-        CardCode: "",
-        fetcher: `${this.cardCode}+USD`,
         CardSellPrice: "",
         CardBuyPrice: "",
+        file: "",
+        img: "",
       },
       CardLogo: undefined,
+      CardImage: undefined,
     };
+  },
+  methods: {
+    handleUpload(e) {
+      const self = this;
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onload = function () {
+        self.form.file = reader.result;
+      };
+    },
+    handleSecondUpload(e) {
+      const self = this;
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onload = function () {
+        self.form.img = reader.result;
+      };
+    },
+    submitCoin() {
+      this.$store.dispatch("cards/postCard", this.form);
+    },
   },
   components: {
     dashNav,

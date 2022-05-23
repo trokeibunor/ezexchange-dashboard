@@ -21,8 +21,6 @@ export default {
       const coins = [];
       querySnapshot.forEach((doc) => {
         const dataObject = doc.data();
-        // dataObject.action =
-
         // delete properties that are not neccesary
         delete dataObject.downloadUrl;
         delete dataObject.fetcher;
@@ -31,7 +29,6 @@ export default {
       });
     },
     async deleteCoin(_, coinCode) {
-      console.log(coinCode);
       await deleteDoc(doc(db, "coins", coinCode));
       const toast = useToast();
       toast.error(`The Coin ${coinCode} has been deleted`);
