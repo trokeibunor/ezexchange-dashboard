@@ -57,7 +57,7 @@
                     >
                       <ul>
                         <li :id="item.coinCode" @click="edit($event)">Edit</li>
-                        <li :id="item.coinCode">Delete</li>
+                        <li :id="item.coinCode" @click="del($event)">Delete</li>
                       </ul>
                     </div>
                   </tr>
@@ -208,6 +208,11 @@ export default {
           break;
         }
       }
+    },
+    del(event) {
+      var theItem = event.target.id;
+      confirm(`Are you sure you want to delete ${theItem}`);
+      this.$store.dispatch("coins/deleteCoin", theItem);
     },
   },
   computed: {

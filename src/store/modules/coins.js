@@ -30,7 +30,8 @@ export default {
         commit("setCoins", coins);
       });
     },
-    async deleteCoin(coinCode) {
+    async deleteCoin(_, coinCode) {
+      console.log(coinCode);
       await deleteDoc(doc(db, "coins", coinCode));
       const toast = useToast();
       toast.error(`The Coin ${coinCode} has been deleted`);
