@@ -17,18 +17,54 @@
           <div class="reveal-box">
             <!-- number -->
             <p>You trade a total of:</p>
-            <h1>15 GiftCards</h1>
+            <h1>{{ cardAmount }} GiftCards</h1>
           </div>
           <!-- Grid holding table and add new Card -->
           <div class="grid-holder">
             <div class="table-holder">
               <h3>Cards Table</h3>
               <!-- bootstrap table -->
-              <b-table responsive striped hover :items="items"> </b-table>
+              <table class="table table-info table-striped table-hover">
+                <thead style="position: sticky; top: 0" class="table-dark">
+                  <tr>
+                    <th class="header" scope="col">Card name</th>
+                    <th class="header" scope="col">Sell Price</th>
+                    <th class="header" scope="col">Buy Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="item in items"
+                    :key="item.cardName"
+                    :id="item.cardName"
+                  >
+                    <td :id="item.cardName" @click="takeAction($event)">
+                      {{ item.cardName }}
+                    </td>
+                    <td :id="item.cardName" @click="takeAction($event)">
+                      {{ item.cardBuyPrice }} USD
+                    </td>
+                    <td :id="item.cardName" @click="takeAction($event)">
+                      {{ item.cardSellPrice }} USD
+                    </td>
+                    <!-- Edit and Delete box -->
+                    <div
+                      class="action-box"
+                      :id="item.cardName"
+                      v-if="Boolean(selected == item.cardName)"
+                    >
+                      <ul>
+                        <li :id="item.cardName" @click="edit($event)">Edit</li>
+                        <li :id="item.cardName" @click="del($event)">Delete</li>
+                      </ul>
+                    </div>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             <div class="other-holder">
               <div class="add-card">
-                <h3>Add New Card</h3>
+                <h3>{{ formHeader }}</h3>
                 <b-form>
                   <b-form-group
                     id="input-group"
@@ -40,10 +76,18 @@
                       id="input-1"
                       type="text"
                       placeholder="Enter Card Name"
+                      v-model="form.cardName"
                       required
                     ></b-form-input>
                   </b-form-group>
-                  <div>
+                  <b-form-textarea
+                    id="textarea"
+                    v-model="form.cardDescription"
+                    placeholder="Card Description ...."
+                    rows="3"
+                    max-rows="6"
+                  ></b-form-textarea>
+                  <div v-if="notEditing">
                     <label for="cardLogo">Card Logo</label>
                     <input
                       type="file"
@@ -53,19 +97,28 @@
                       :state="Boolean(cardLogo)"
                       placeholder="Please Upload Card logo"
                       drop-placeholder="Drop file here..."
+                      description=""
                     />
+                    <p class="small">
+                      This is the logo of the company or firm that issues the
+                      card, preferably png image.
+                    </p>
                   </div>
-                  <div>
-                    <label for="cardLogo">Card Logo</label>
+                  <div v-if="notEditing">
+                    <label for="cardImage">Card Image</label>
                     <input
                       type="file"
                       class="form-control"
                       @change="handleSecondUpload"
-                      id="cardLogo"
-                      :state="Boolean(CardImage)"
+                      id="cardImage"
+                      :state="Boolean(cardImage)"
                       placeholder="Please Upload Card Image"
                       drop-placeholder="Drop file here..."
                     />
+                    <p class="small">
+                      This is an Image of the card to help users have a visual
+                      que of what they are about to purchase
+                    </p>
                   </div>
                   <div class="form-row">
                     <b-form-group
@@ -76,7 +129,7 @@
                     >
                       <b-form-input
                         id="input-1"
-                        v-model="form.CardSellPrice"
+                        v-model="form.cardSellPrice"
                         type="number"
                         placeholder="Price in USD"
                         required
@@ -90,14 +143,19 @@
                     >
                       <b-form-input
                         id="input-1"
-                        v-model="form.CardBuyPrice"
+                        v-model="form.cardBuyPrice"
                         type="number"
                         placeholder="Enter Price in USD"
                         required
                       ></b-form-input>
                     </b-form-group>
                   </div>
-                  <b-button type="submit" variant="primary">Submit</b-button>
+                  <b-button
+                    @click="submitCard"
+                    type="submit"
+                    variant="primary"
+                    >{{ formCommand }}</b-button
+                  >
                 </b-form>
               </div>
             </div>
@@ -115,31 +173,22 @@ export default {
   name: "dashCard",
   data() {
     return {
-      items: [
-        {
-          age: 40,
-          first_name: "Dickerson",
-          last_name: "Macdonald",
-          action: "action",
-        },
-        { age: 21, first_name: "Larsen", last_name: "Shaw", action: "action" },
-        {
-          age: 89,
-          first_name: "Geneva",
-          last_name: "Wilson",
-          action: "action",
-        },
-        { age: 38, first_name: "Jami", last_name: "Carney", action: "action" },
-      ],
+      formHeader: "Add New Card",
+      formCommand: "Add card to database",
+      selected: "",
+      notEditing: true,
+      items: [],
       form: {
-        CardName: "",
-        CardSellPrice: "",
-        CardBuyPrice: "",
+        cardName: "",
+        cardSellPrice: "",
+        cardBuyPrice: "",
+        cardDescription: "",
         file: "",
         img: "",
       },
-      CardLogo: undefined,
-      CardImage: undefined,
+      cardLogo: undefined,
+      cardImage: undefined,
+      cardAmount: "",
     };
   },
   methods: {
@@ -161,9 +210,42 @@ export default {
         self.form.img = reader.result;
       };
     },
-    submitCoin() {
-      this.$store.dispatch("cards/postCard", this.form);
+    takeAction(event) {
+      var selectedCard = event.target.id;
+      this.selected = selectedCard;
     },
+    edit(event) {
+      var theItem = event.target.id;
+      this.formHeader = `Currently Editing ${theItem}`;
+      this.formCommand = `Update ${theItem} Data`;
+      this.notEditing = false;
+      var items = this.items;
+      var self = this;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].cardName == theItem) {
+          self.form.cardName = items[i].cardName;
+          self.form.cardDescription = items[i].cardDescription;
+          self.form.cardSellPrice = items[i].cardSellPrice;
+          self.form.cardBuyPrice = items[i].cardBuyPrice;
+          break;
+        }
+      }
+    },
+    del(event) {
+      var theItem = event.target.id;
+      if (confirm(`Are you sure you want to delete ${theItem}`)) {
+        this.$store.dispatch("cards/deleteCard", theItem);
+      }
+    },
+    submitCard() {
+      this.$store.dispatch("cards/postCards", this.form);
+    },
+  },
+  created() {
+    this.$store.dispatch("cards/getCards");
+    this.items = this.$store.state.cards.items;
+    console.log(this.items);
+    this.cardAmount = this.items.length;
   },
   components: {
     dashNav,
@@ -221,16 +303,33 @@ export default {
       text-align: left;
     }
     .table-holder {
-      table {
-        width: 98%;
-        th,
-        td {
-          height: 32px;
-          border-radius: 8px;
-        }
-        thead {
-          background-color: #0077b6;
-          color: #fff;
+      width: 95%;
+      height: 300px;
+      overflow: auto;
+      .header {
+        position: sticky;
+        top: 0;
+      }
+      tr {
+        cursor: pointer;
+      }
+      .action-box {
+        position: relative;
+        right: 20;
+        border-radius: 8px;
+        box-shadow: 0px 1px 4px #0076b63a;
+        text-align: left;
+        ul {
+          list-style: none;
+          margin: 0px;
+          padding: 0px;
+          li {
+            line-height: 140%;
+            cursor: pointer;
+          }
+          li:hover {
+            color: #0077b6;
+          }
         }
       }
     }
@@ -266,6 +365,12 @@ export default {
         }
       }
     }
+  }
+  .small {
+    margin: 0px;
+    padding: 0px;
+    font-size: 14px;
+    opacity: 0.95;
   }
 }
 </style>

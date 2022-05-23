@@ -213,6 +213,7 @@ export default {
     del(event) {
       var theItem = event.target.id;
       if (confirm(`Are you sure you want to delete ${theItem}`)) {
+        console.log(this.$store.dispatch("coins/deleteCoin", theItem));
         this.$store.dispatch("coins/deleteCoin", theItem);
       }
     },

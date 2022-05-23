@@ -25,15 +25,18 @@ export default {
         delete dataObject.downloadUrl;
         delete dataObject.fetcher;
         cards.push({ ...dataObject });
-        commit("setCoins", cards);
+        commit("setCards", cards);
       });
     },
-    async deleteCoin(_, cardName) {
-      await deleteDoc(doc(db, "coins", cardName));
+    async deleteCard(_, cardName) {
+      await deleteDoc(doc(db, "cards", cardName));
       const toast = useToast();
-      toast.error(`The Coin ${cardName} has been deleted`);
+      toast.error(`The Card ${cardName} has been deleted`);
     },
-    async postCards(_, { cardName, cardSellPrice, cardBuyPrice, file, img }) {
+    async postCards(
+      _,
+      { cardName, cardDescription, cardSellPrice, cardBuyPrice, file, img }
+    ) {
       var storage = getStorage();
       const storageRef = ref(storage, cardName);
       const secondStorageRef = ref(storage, `${cardName} Image`);
@@ -41,10 +44,11 @@ export default {
       const uploadSecondResult = await uploadBytes(secondStorageRef, img);
       const downloadUrlFile = await getDownloadURL(uploadResult.ref);
       const downloadUrlImg = await getDownloadURL(uploadSecondResult.ref);
-      await setDoc(doc(db, "coins", cardName), {
+      await setDoc(doc(db, "cards", cardName), {
         cardName,
         cardSellPrice,
         cardBuyPrice,
+        cardDescription,
         cardlogo: downloadUrlFile,
         cardImg: downloadUrlImg,
       });
