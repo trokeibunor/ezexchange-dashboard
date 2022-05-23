@@ -15,24 +15,58 @@
           <div class="reveal-box">
             <!-- number-->
             <p>You trade a total of:</p>
-            <h1>23 coins</h1>
+            <h1>{{ coinAmount }} coins</h1>
           </div>
           <!-- grid holding table and add new coin -->
           <div class="grid-holder">
             <div class="table-holder">
               <h3>Coins Table</h3>
-              <!-- bootstrap table -->
-              <b-table
-                responsive
-                striped
-                hover
-                :items="items"
-                :fields="fields"
-              ></b-table>
+              <!-- Normal bootstrap table -->
+              <table class="table table-info table-striped table-hover">
+                <thead style="position: sticky; top: 0" class="table-dark">
+                  <tr>
+                    <th class="header" scope="col">Code</th>
+                    <th class="header" scope="col">Coin name</th>
+                    <th class="header" scope="col">Sell Price</th>
+                    <th class="header" scope="col">Buy Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="item in items"
+                    :key="item.coinCode"
+                    :id="item.coinCode"
+                  >
+                    <td :id="item.coinCode" @click="takeAction($event)">
+                      {{ item.coinCode }}
+                    </td>
+                    <td :id="item.coinCode" @click="takeAction($event)">
+                      {{ item.coinName }}
+                    </td>
+                    <td :id="item.coinCode" @click="takeAction($event)">
+                      {{ item.coinBuyPrice }} USD
+                    </td>
+                    <td :id="item.coinCode" @click="takeAction($event)">
+                      {{ item.coinSellPrice }} USD
+                    </td>
+                    <!-- Edit and Delete box -->
+                    <div
+                      class="action-box"
+                      :id="item.coinCode"
+                      v-if="Boolean(selected == item.coinCode)"
+                    >
+                      <ul>
+                        <li :id="item.coinCode" @click="edit($event)">Edit</li>
+                        <li :id="item.coinCode">Delete</li>
+                      </ul>
+                    </div>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             <div class="other-holder">
               <div class="add-coin">
-                <h3>Add New Coin</h3>
+                <h3>{{ formHeader }}</h3>
                 <b-form>
                   <b-form-group
                     id="input-group"
@@ -70,6 +104,7 @@
                       :state="Boolean(coinLogo)"
                       placeholder="Please Upload coin logo"
                       drop-placeholder="Drop file here..."
+                      v-if="notEditing"
                     />
                   </div>
                   <div class="form-row">
@@ -100,9 +135,9 @@
                       ></b-form-input>
                     </b-form-group>
                   </div>
-                  <b-button @click="submitCoin" variant="primary"
-                    >Submit</b-button
-                  >
+                  <button @click="submitCoin" type="submit" variant="primary">
+                    {{ formCommand }}
+                  </button>
                 </b-form>
               </div>
             </div>
@@ -120,37 +155,12 @@ export default {
   name: "dashCoin",
   data() {
     return {
-      fields: ["name", "code", "sell_Price", "buy_Price", "actions"],
-      items: [
-        {
-          name: "Bitcoin",
-          code: "BTC",
-          sell_Price: "540" + "USD",
-          buy_Price: "480" + "USD",
-          actions: "",
-        },
-        {
-          name: "Ethereum",
-          code: "ETH",
-          sell_Price: "540" + "USD",
-          buy_Price: "480" + "USD",
-          actions: "",
-        },
-        {
-          name: "Binance Token",
-          code: "BNB",
-          sell_Price: "540" + "USD",
-          buy_Price: "480" + "USD",
-          actions: "",
-        },
-        {
-          name: "Solana",
-          code: "SOL",
-          sell_Price: "540" + "USD",
-          buy_Price: "480" + "USD",
-          actions: "",
-        },
-      ],
+      selected: "",
+      formHeader: "Add New Coin",
+      formCommand: "Add coin to database",
+      notEditing: true,
+      items: [],
+      coinAmount: "",
       form: {
         coinName: "",
         coinCode: "",
@@ -178,9 +188,44 @@ export default {
     submitCoin() {
       this.$store.dispatch("coins/postCoins", this.form);
     },
+    takeAction(event) {
+      var selectedCoin = event.target.id;
+      this.selected = selectedCoin;
+    },
+    edit(event) {
+      var theItem = event.target.id;
+      this.formHeader = `Currently Editing ${theItem}`;
+      this.formCommand = `Update ${theItem} Data`;
+      this.notEditing = false;
+      var items = this.items;
+      var self = this;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].coinCode == theItem) {
+          self.form.coinCode = items[i].coinCode;
+          self.form.coinName = items[i].coinName;
+          self.form.coinSellPrice = items[i].coinSellPrice;
+          self.form.coinBuyPrice = items[i].coinBuyPrice;
+          break;
+        }
+      }
+    },
   },
-  mounted() {
-    console.log(this.form);
+  computed: {
+    initializerItems() {
+      return this.items;
+    },
+    initializerNumber() {
+      return this.coinAmount;
+    },
+  },
+  created() {
+    this.$store.dispatch("coins/getCoins");
+    this.items = this.$store.state.coins.items;
+    console.log(this.items);
+    this.coinAmount = this.items.length;
+  },
+  beforeMount() {
+    this.initializerItems;
   },
 };
 </script>
@@ -233,16 +278,30 @@ export default {
       text-align: left;
     }
     .table-holder {
-      table {
-        width: 98%;
-        th,
-        td {
-          height: 32px;
-          border-radius: 8px;
-        }
-        thead {
-          background-color: #0077b6;
-          color: #fff;
+      width: 95%;
+      height: 300px;
+      overflow: auto;
+      .header {
+        position: sticky;
+        top: 0;
+      }
+      .action-box {
+        position: relative;
+        right: 20;
+        border-radius: 8px;
+        box-shadow: 0px 1px 4px #0076b63a;
+        text-align: left;
+        ul {
+          list-style: none;
+          margin: 0px;
+          padding: 0px;
+          li {
+            line-height: 140%;
+            cursor: pointer;
+          }
+          li:hover {
+            color: #0077b6;
+          }
         }
       }
     }

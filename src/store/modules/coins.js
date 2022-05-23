@@ -1,10 +1,10 @@
 import { db } from "../../db";
 import {
-  getDoc,
-  collectionGroup,
-  query,
   setDoc,
+  getDocs,
+  collection,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useToast } from "vue-toastification";
@@ -17,13 +17,23 @@ export default {
   },
   actions: {
     async getCoins({ commit }) {
-      const coinQuery = query(collectionGroup(db, "coins"));
-      const snapshot = await getDoc(coinQuery);
-      const coins = snapshot.docs.map((doc) => {
-        const data = doc.data();
-        return data;
+      const querySnapshot = await getDocs(collection(db, "coins"));
+      const coins = [];
+      querySnapshot.forEach((doc) => {
+        const dataObject = doc.data();
+        // dataObject.action =
+
+        // delete properties that are not neccesary
+        delete dataObject.downloadUrl;
+        delete dataObject.fetcher;
+        coins.push({ ...dataObject });
+        commit("setCoins", coins);
       });
-      commit("setCoins", coins);
+    },
+    async deleteCoin(coinCode) {
+      await deleteDoc(doc(db, "coins", coinCode));
+      const toast = useToast();
+      toast.error(`The Coin ${coinCode} has been deleted`);
     },
     async postCoins(
       _,

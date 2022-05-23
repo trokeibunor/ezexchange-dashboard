@@ -15,7 +15,7 @@ var checker = adminDetail.loggedIn;
 console.log(checker);
 const routes = [
   {
-    path: "/",
+    path: "/home",
     name: "dashboardHome",
     component: dashHome,
     meta: { mustBeLogged: true },
@@ -45,7 +45,7 @@ const routes = [
     meta: { mustBeLogged: true },
   },
   {
-    path: "/signUp",
+    path: "/",
     name: "signUp",
     component: signUp,
   },

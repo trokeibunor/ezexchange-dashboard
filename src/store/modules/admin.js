@@ -42,7 +42,7 @@ export default {
         email,
         password,
       });
-      router.push("/signUp");
+      router.push("/");
     },
     async login({ commit }, { email, password }) {
       const docRef = doc(db, "admin", `${email}`);
@@ -64,7 +64,7 @@ export default {
             localStorage.setItem("loggedIn", true);
             toast.info("Login Successful");
           }
-          router.push("/");
+          router.push("/home");
         } else {
           toast.error("Please check your email or password");
         }
@@ -76,7 +76,7 @@ export default {
     },
     logOut({ commit }) {
       commit("loggedOut");
-      router.push("/signUp");
+      router.push("/");
     },
   },
 };

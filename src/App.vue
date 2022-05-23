@@ -13,7 +13,7 @@ export default {
       adminDetail == null ||
       adminDetail.loggedIn == "false"
     ) {
-      this.$router.push("/signUp");
+      this.$router.push("/");
     }
   },
 };

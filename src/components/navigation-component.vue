@@ -41,8 +41,17 @@ export default {
       this.$store.dispatch("admin/logOut");
     },
   },
-  mounted() {
+  computed: {
+    nameInit() {
+      return this.name;
+    },
+  },
+  created() {
+    this.$store.state.admin.name;
     this.name = this.$store.state.admin.name;
+  },
+  beforeMount() {
+    this.nameInit;
   },
 };
 </script>
