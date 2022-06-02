@@ -65,7 +65,11 @@
                 <b-table striped hover :items="article"></b-table>
               </div>
               <div id="add-article" v-show="articleFormContent">
-                <form action="#" id="article-form">
+                <form
+                  @submit.prevent="submitAriticle"
+                  action="#"
+                  id="article-form"
+                >
                   <h4>Ariticle Form</h4>
                   <input
                     type="text"
@@ -74,10 +78,11 @@
                     v-model="articleForm.title"
                   />
                   <input type="file" class="form-control" />
-                  <QuillEditor theme="snow" />
-                  <button id="submitArticle" @click="submitArticle">
-                    Submit Ariticle
-                  </button>
+                  <QuillEditor
+                    theme="snow"
+                    v-model:content="articleForm.content"
+                  />
+                  <button id="submitArticle">Submit Ariticle</button>
                 </form>
               </div>
             </div>
@@ -104,7 +109,11 @@
                     v-model="resourceForm.title"
                   />
                   <input type="file" class="form-control" />
-                  <QuillEditor theme="snow" />
+                  <QuillEditor
+                    theme="snow"
+                    v-model:content="resourceForm.content"
+                    contentType="html"
+                  />
                   <button id="submitArticle" @click="addResource">
                     Add Resource
                   </button>
@@ -123,9 +132,11 @@ import dashSide from "../components/sidebar-component.vue";
 import dashNav from "../components/navigation-component.vue";
 import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 export default {
   name: "dashAriticle",
   data() {
+    // const editorContent = ref({});
     return {
       currentContent: true,
       isActive: true,
@@ -140,6 +151,8 @@ export default {
       ],
       articleForm: {
         title: "New Title",
+        file: "",
+        content: "I'm checking some content",
       },
       articleFormContent: false,
       resource: [
@@ -150,6 +163,8 @@ export default {
       ],
       resourceForm: {
         title: "New Title",
+        file: "",
+        content: "",
       },
       resourceFormContent: false,
     };
@@ -160,6 +175,15 @@ export default {
     QuillEditor,
   },
   methods: {
+    submitAriticle() {
+      var select = this.articleForm.content;
+      var selected = { ...select };
+      var cfg = {};
+      var converter = new QuillDeltaToHtmlConverter(selected.ops, cfg);
+      var html = converter.convert();
+      console.log(html);
+    },
+    addResource() {},
     reduceMenu() {
       var aux_sidebar = document.querySelector(".aux-sidebar");
       var aux_menu = document.querySelector(".aux-menu");
@@ -194,11 +218,20 @@ export default {
         this.resourceButton = "Go Back";
       }
     },
+    // Handle article image upload
+    handleArtImgUpload(e) {
+      const self = this;
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onLoad = function () {
+        //
+        self.articleForm.file = reader.result;
+      };
+    },
     changeActive() {
       this.isActive = this.currentContent;
     },
-    submitAriticle() {},
-    addResource() {},
   },
 };
 </script>
