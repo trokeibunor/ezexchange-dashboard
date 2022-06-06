@@ -5,14 +5,14 @@ import {
   setDoc,
   doc,
   collection,
-  Timestamp,
+  serverTimestamp,
   getDocs,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 // Import vue-Toast
 import { useToast } from "vue-toastification";
 export default {
-  nameSpaced: true,
+  namespaced: true,
   state() {
     return {
       articles: [],
@@ -38,20 +38,21 @@ export default {
         commit("setResources", resources);
       });
     },
-    async addArticle(_, { title, file, content }) {
+    async addArticle(_, { title, file, content, selectedGroup, timeToRead }) {
       var storage = getStorage();
       const storageRef = ref(storage, title);
       const uploadArticle = await uploadBytes(storageRef, file);
       const downloadUrl = await getDownloadURL(uploadArticle.ref);
 
       // push to firebase
-      await setDoc(doc, "articles", title),
-        {
-          title,
-          downloadUrl,
-          content,
-          Timestamp,
-        };
+      await setDoc(doc(db, "articles", title), {
+        title,
+        link: downloadUrl,
+        content: content,
+        group: selectedGroup,
+        time: timeToRead,
+        created: serverTimestamp(),
+      });
       var toast = useToast();
       toast.info("Article Added to database");
     },

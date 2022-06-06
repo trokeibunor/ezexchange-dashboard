@@ -77,7 +77,39 @@
                     placeholder="Title"
                     v-model="articleForm.title"
                   />
-                  <input type="file" class="form-control" />
+                  <input
+                    type="file"
+                    class="form-control"
+                    @change="handleArtImgUpload"
+                    :state="Boolean(articleImg)"
+                  />
+                  <b-form-group
+                    label="Article Group"
+                    v-slot="{ ariaDescribedby }"
+                  >
+                    <b-form-radio
+                      id="radio"
+                      v-model="articleForm.selectedGroup"
+                      :aria-describedby="ariaDescribedby"
+                      name="selector"
+                      value="featured"
+                      >Featured Article</b-form-radio
+                    >
+                    <b-form-radio
+                      v-model="articleForm.selectedGroup"
+                      :aria-describedby="ariaDescribedby"
+                      name="selector"
+                      value="annoucement"
+                      >Annoucement</b-form-radio
+                    >
+                    <b-form-radio
+                      v-model="articleForm.selectedGroup"
+                      :aria-describedby="ariaDescribedby"
+                      name="selector"
+                      value="highlight"
+                      >Highlights</b-form-radio
+                    >
+                  </b-form-group>
                   <QuillEditor
                     theme="snow"
                     v-model:content="articleForm.content"
@@ -136,13 +168,13 @@ import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 export default {
   name: "dashAriticle",
   data() {
-    // const editorContent = ref({});
     return {
       currentContent: true,
       isActive: true,
       articleButton: "Add New",
       resourceButton: "Add New",
       menu: true,
+      articleImg: undefined,
       article: [
         { age: 40, first_name: "Dickerson", last_name: "Macdonald" },
         { age: 21, first_name: "Larsen", last_name: "Shaw" },
@@ -153,6 +185,8 @@ export default {
         title: "New Title",
         file: "",
         content: "I'm checking some content",
+        selectedGroup: "",
+        timeToRead: "",
       },
       articleFormContent: false,
       resource: [
@@ -181,7 +215,19 @@ export default {
       var cfg = {};
       var converter = new QuillDeltaToHtmlConverter(selected.ops, cfg);
       var html = converter.convert();
-      console.log(html);
+      var content = html;
+      // Calculate words per minute
+      const text = content;
+      const wpm = 225;
+      const words = text.trim().split(/\s+/).length;
+      const time = Math.ceil(words / wpm);
+      // add to data
+      this.articleForm.timeToRead = time;
+      this.articleForm.content = content;
+      // console.log(content);
+      // console.log(text);
+      console.log(this.articleForm.content);
+      this.$store.dispatch("articles/addArticle", this.articleForm);
     },
     addResource() {},
     reduceMenu() {
@@ -224,8 +270,8 @@ export default {
       const file = e.target.files[0];
       const reader = new FileReader();
       reader.readAsArrayBuffer(file);
-      reader.onLoad = function () {
-        //
+      reader.onload = function () {
+        console.log(reader.result);
         self.articleForm.file = reader.result;
       };
     },
@@ -318,7 +364,8 @@ li {
   #article-form {
     width: 80%;
     margin: 16px auto;
-    input {
+    input,
+    fieldset {
       margin: 8px 0px;
     }
     input[type="text"],
