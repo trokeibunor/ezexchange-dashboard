@@ -62,7 +62,54 @@
               </button>
               <div id="article-table" v-show="!articleFormContent">
                 <h4>Article List</h4>
-                <b-table striped hover :items="article"></b-table>
+                <!-- Bootstrap form -->
+                <!-- <b-table striped hover :items="article"></b-table> -->
+                <table class="table table-info table-striped table-hover">
+                  <thead style="position: sticky; top: 0" class="table-dark">
+                    <tr>
+                      <th class="header" scope="col">Title</th>
+                      <th class="header" scope="col">Image</th>
+                      <th class="header" scope="col">Category</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="item in article"
+                      :key="item.title"
+                      :id="item.title"
+                    >
+                      <td :id="item.title" @click="takeActionArt($event)">
+                        {{ item.title }}
+                      </td>
+                      <td :id="item.title" @click="takeActionArt($event)">
+                        <img
+                          :src="item.link"
+                          style="max-width: 68px; max-height: 48px"
+                          alt=""
+                        />
+                      </td>
+                      <td :id="item.title" @click="takeActionArt($event)">
+                        {{ item.group }}
+                      </td>
+                      <!-- Edit and Delete box -->
+                      <div
+                        class="action-box"
+                        :id="item.title"
+                        v-if="Boolean(selectedArticle == item.title)"
+                      >
+                        <ul>
+                          <li :id="item.coinCode" @click="editArt($event)">
+                            Edit
+                          </li>
+                          <li :id="item.coinCode" @click="delArt($event)">
+                            Delete
+                          </li>
+                        </ul>
+                      </div>
+                    </tr>
+                  </tbody>
+                </table>
+                <!-- End of Bootstrap form -->
               </div>
               <div id="add-article" v-show="articleFormContent">
                 <form
@@ -169,18 +216,14 @@ export default {
   name: "dashAriticle",
   data() {
     return {
+      selectedArticle: "",
       currentContent: true,
       isActive: true,
       articleButton: "Add New",
       resourceButton: "Add New",
       menu: true,
       articleImg: undefined,
-      article: [
-        { age: 40, first_name: "Dickerson", last_name: "Macdonald" },
-        { age: 21, first_name: "Larsen", last_name: "Shaw" },
-        { age: 89, first_name: "Geneva", last_name: "Wilson" },
-        { age: 38, first_name: "Jami", last_name: "Carney" },
-      ],
+      article: [],
       articleForm: {
         title: "New Title",
         file: "",
@@ -189,12 +232,7 @@ export default {
         timeToRead: "",
       },
       articleFormContent: false,
-      resource: [
-        { age: 40, first_name: "Dickerson", last_name: "Macdonald" },
-        { age: 21, first_name: "Larsen", last_name: "Shaw" },
-        { age: 89, first_name: "Geneva", last_name: "Wilson" },
-        { age: 38, first_name: "Jami", last_name: "Carney" },
-      ],
+      resource: [],
       resourceForm: {
         title: "New Title",
         file: "",
@@ -209,6 +247,13 @@ export default {
     QuillEditor,
   },
   methods: {
+    takeActionArt(event) {
+      var selected = event.target.id;
+      this.selectedArticle = selected;
+    },
+    editArt(event) {
+      console.log(event);
+    },
     submitAriticle() {
       var select = this.articleForm.content;
       var selected = { ...select };
@@ -278,6 +323,23 @@ export default {
     changeActive() {
       this.isActive = this.currentContent;
     },
+  },
+  computed: {
+    initializerArt() {
+      return this.article;
+    },
+    initializerRes() {
+      return this.resource;
+    },
+  },
+  beforeCreate() {
+    // this.initializerRes();
+    // this.initializerArt();
+  },
+  created() {
+    this.$store.dispatch("articles/getArticles");
+    this.article = this.$store.state.articles.articles;
+    console.log(this.article);
   },
 };
 </script>
@@ -379,6 +441,25 @@ li {
       background-color: #118ab2;
       color: white;
       margin-top: 16px;
+    }
+  }
+}
+.action-box {
+  position: absolute;
+  right: 0%;
+  border-radius: 8px;
+  box-shadow: 0px 1px 4px #0076b63a;
+  text-align: left;
+  ul {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+    li {
+      line-height: 140%;
+      cursor: pointer;
+    }
+    li:hover {
+      color: #0077b6;
     }
   }
 }
