@@ -98,10 +98,10 @@
                         v-if="Boolean(selectedArticle == item.title)"
                       >
                         <ul>
-                          <li :id="item.coinCode" @click="editArt($event)">
+                          <li :id="item.title" @click="editArt($event)">
                             Edit
                           </li>
-                          <li :id="item.coinCode" @click="delArt($event)">
+                          <li :id="item.title" @click="delArt($event)">
                             Delete
                           </li>
                         </ul>
@@ -117,7 +117,7 @@
                   action="#"
                   id="article-form"
                 >
-                  <h4>Ariticle Form</h4>
+                  <h4>{{ articleFormName }}</h4>
                   <input
                     type="text"
                     class="form-control"
@@ -129,6 +129,7 @@
                     class="form-control"
                     @change="handleArtImgUpload"
                     :state="Boolean(articleImg)"
+                    v-if="editingArt"
                   />
                   <b-form-group
                     label="Article Group"
@@ -160,6 +161,7 @@
                   <QuillEditor
                     theme="snow"
                     v-model:content="articleForm.content"
+                    v-html="articleForm.contentHtml"
                   />
                   <button id="submitArticle">Submit Ariticle</button>
                 </form>
@@ -217,6 +219,7 @@ export default {
   data() {
     return {
       selectedArticle: "",
+      editingArt: true,
       currentContent: true,
       isActive: true,
       articleButton: "Add New",
@@ -228,10 +231,12 @@ export default {
         title: "New Title",
         file: "",
         content: "I'm checking some content",
+        contentHtml: "",
         selectedGroup: "",
         timeToRead: "",
       },
       articleFormContent: false,
+      articleFormName: "Article Name",
       resource: [],
       resourceForm: {
         title: "New Title",
@@ -252,7 +257,22 @@ export default {
       this.selectedArticle = selected;
     },
     editArt(event) {
-      console.log(event);
+      this.articleFormContent = !this.articleFormContent;
+      var theArticle = event.target.id;
+      this.articleFormName = `Currently Editing ${theArticle}`;
+      this.editingArt = false;
+      // populate form with database data
+      var articles = this.article;
+      var self = this;
+      // loop through articles
+      for (var i = 0; i < articles.length; i++) {
+        if (articles[i].title == theArticle) {
+          self.articleForm.title = articles[i].title;
+          self.articleForm.selectedGroup = articles[i].group;
+          self.article.contentHtml = articles[i].content;
+          console.log(self.article.contentHtml);
+        }
+      }
     },
     submitAriticle() {
       var select = this.articleForm.content;
@@ -271,7 +291,6 @@ export default {
       this.articleForm.content = content;
       // console.log(content);
       // console.log(text);
-      console.log(this.articleForm.content);
       this.$store.dispatch("articles/addArticle", this.articleForm);
     },
     addResource() {},
@@ -316,7 +335,6 @@ export default {
       const reader = new FileReader();
       reader.readAsArrayBuffer(file);
       reader.onload = function () {
-        console.log(reader.result);
         self.articleForm.file = reader.result;
       };
     },
@@ -339,7 +357,6 @@ export default {
   created() {
     this.$store.dispatch("articles/getArticles");
     this.article = this.$store.state.articles.articles;
-    console.log(this.article);
   },
 };
 </script>
