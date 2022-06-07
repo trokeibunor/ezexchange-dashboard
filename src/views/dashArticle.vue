@@ -63,7 +63,6 @@
               <div id="article-table" v-show="!articleFormContent">
                 <h4>Article List</h4>
                 <!-- Bootstrap form -->
-                <!-- <b-table striped hover :items="article"></b-table> -->
                 <table class="table table-info table-striped table-hover">
                   <thead style="position: sticky; top: 0" class="table-dark">
                     <tr>
@@ -123,6 +122,7 @@
                     class="form-control"
                     placeholder="Title"
                     v-model="articleForm.title"
+                    :disabled="editingArt"
                   />
                   <input
                     type="file"
@@ -158,12 +158,16 @@
                       >Highlights</b-form-radio
                     >
                   </b-form-group>
+                  <!-- Manuel content synchronization -->
                   <QuillEditor
+                    ref="quillArticle"
                     theme="snow"
-                    v-model:content="articleForm.content"
-                    v-html="articleForm.contentHtml"
+                    :content="articleForm.content"
+                    contentType="html"
                   />
-                  <button id="submitArticle">Submit Ariticle</button>
+                  <button class="submit" id="submitArticle">
+                    {{ submitAriticles }}
+                  </button>
                 </form>
               </div>
             </div>
@@ -193,6 +197,7 @@
                   <QuillEditor
                     theme="snow"
                     v-model:content="resourceForm.content"
+                    v-html="resourceForm.content"
                     contentType="html"
                   />
                   <button id="submitArticle" @click="addResource">
@@ -213,13 +218,13 @@ import dashSide from "../components/sidebar-component.vue";
 import dashNav from "../components/navigation-component.vue";
 import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
-import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 export default {
   name: "dashAriticle",
   data() {
     return {
+      submitAriticles: "Submit Article",
       selectedArticle: "",
-      editingArt: true,
+      editingArt: false,
       currentContent: true,
       isActive: true,
       articleButton: "Add New",
@@ -230,7 +235,7 @@ export default {
       articleForm: {
         title: "New Title",
         file: "",
-        content: "I'm checking some content",
+        content: "<i>Start Typing........... </i>",
         contentHtml: "",
         selectedGroup: "",
         timeToRead: "",
@@ -246,52 +251,72 @@ export default {
       resourceFormContent: false,
     };
   },
+  created() {
+    this.$store.dispatch("articles/getArticles");
+    this.article = this.$store.state.articles.articles;
+  },
   components: {
     dashSide,
     dashNav,
     QuillEditor,
   },
+  computed: {
+    initializerArt() {
+      return this.article;
+    },
+    initializerRes() {
+      return this.resource;
+    },
+    editor() {
+      return this.$refs.quillArticle;
+    },
+  },
   methods: {
+    updateContent(hello) {
+      this.articleForm.content = hello;
+      this.editor.setHTML(this.articleForm.content);
+    },
     takeActionArt(event) {
       var selected = event.target.id;
       this.selectedArticle = selected;
     },
     editArt(event) {
-      this.articleFormContent = !this.articleFormContent;
+      this.articleFormContent = true;
       var theArticle = event.target.id;
       this.articleFormName = `Currently Editing ${theArticle}`;
-      this.editingArt = false;
+      this.articleButton = "Go Back";
+      this.submitAriticles = `Update ${theArticle}`;
+      this.editingArt = true;
       // populate form with database data
       var articles = this.article;
       var self = this;
       // loop through articles
       for (var i = 0; i < articles.length; i++) {
+        console.log(self.articleForm);
         if (articles[i].title == theArticle) {
-          self.articleForm.title = articles[i].title;
-          self.articleForm.selectedGroup = articles[i].group;
-          self.article.contentHtml = articles[i].content;
-          console.log(self.article.contentHtml);
+          this.articleForm.title = articles[i].title;
+          this.articleForm.selectedGroup = articles[i].group;
+          // conversion to template literal
+          this.updateContent(articles[i].content);
+          console.log("article from here");
+          console.log(this.articleForm);
         }
       }
     },
     submitAriticle() {
       var select = this.articleForm.content;
-      var selected = { ...select };
-      var cfg = {};
-      var converter = new QuillDeltaToHtmlConverter(selected.ops, cfg);
-      var html = converter.convert();
-      var content = html;
+
       // Calculate words per minute
-      const text = content;
+      const text = select;
       const wpm = 225;
       const words = text.trim().split(/\s+/).length;
       const time = Math.ceil(words / wpm);
       // add to data
       this.articleForm.timeToRead = time;
-      this.articleForm.content = content;
-      // console.log(content);
-      // console.log(text);
-      this.$store.dispatch("articles/addArticle", this.articleForm);
+      this.articleForm.content = text;
+      console.log(text);
+      console.log(time);
+      // this.$store.dispatch("articles/addArticle", this.articleForm);
     },
     addResource() {},
     reduceMenu() {
@@ -314,6 +339,13 @@ export default {
     },
     openArticle() {
       this.articleFormContent = !this.articleFormContent;
+      this.articleForm.selectedGroup = "";
+      this.articleFormName = "Article Form";
+      this.submitAriticles = "Submit Article";
+      this.editingArt = false;
+      var initialContent = "<i> Start Typing ........<I/>";
+      this.updateContent(initialContent);
+      // this.articleForm.content = "<p> Start Typing<p/>";
       if (this.articleButton == "Go Back") {
         this.articleButton = "Add New";
       } else if (this.articleButton == "Add New") {
@@ -342,22 +374,7 @@ export default {
       this.isActive = this.currentContent;
     },
   },
-  computed: {
-    initializerArt() {
-      return this.article;
-    },
-    initializerRes() {
-      return this.resource;
-    },
-  },
-  beforeCreate() {
-    // this.initializerRes();
-    // this.initializerArt();
-  },
-  created() {
-    this.$store.dispatch("articles/getArticles");
-    this.article = this.$store.state.articles.articles;
-  },
+  beforeCreate() {},
 };
 </script>
 
@@ -495,6 +512,12 @@ li {
   input[type="file"] {
     width: 96%;
   }
+}
+.submit {
+  cursor: pointer;
+}
+.submit:hover {
+  background-color: #118ab22f;
 }
 #submitArticle {
   border: none;

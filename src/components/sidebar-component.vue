@@ -5,7 +5,7 @@
       <img src="../assets/images/Logo.svg" alt="" srcset="" />
     </div>
     <ul class="nav-list">
-      <router-link to="/">
+      <router-link to="/home">
         <img src="../assets/images/dash_icon.svg" alt="" srcset="" />
         Dashboard
       </router-link>
