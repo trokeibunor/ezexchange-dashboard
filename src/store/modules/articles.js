@@ -56,6 +56,23 @@ export default {
       var toast = useToast();
       toast.info("Article Added to database");
     },
+    async addResource(_, { title, file, content, timeToRead }) {
+      var storage = getStorage();
+      const storageRef = ref(storage, title);
+      const uploadResouce = await uploadBytes(storageRef, file);
+      const downloadUrl = await getDownloadURL(uploadResouce.ref);
+
+      // push to fire base
+      await setDoc(doc(db, "resources", title), {
+        title,
+        link: downloadUrl,
+        content: content,
+        time: timeToRead,
+        created: serverTimestamp,
+      });
+      var toast = useToast();
+      toast.info("Resource Added to database");
+    },
   },
   mutations: {
     async setArticles(state, articles) {

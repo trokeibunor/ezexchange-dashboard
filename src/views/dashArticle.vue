@@ -62,7 +62,7 @@
               </button>
               <div id="article-table" v-show="!articleFormContent">
                 <h4>Article List</h4>
-                <!-- Bootstrap form -->
+                <!-- Bootstrap table-->
                 <table class="table table-info table-striped table-hover">
                   <thead style="position: sticky; top: 0" class="table-dark">
                     <tr>
@@ -108,7 +108,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <!-- End of Bootstrap form -->
+                <!-- End of Bootstrap Table -->
               </div>
               <div id="add-article" v-show="articleFormContent">
                 <form
@@ -129,7 +129,7 @@
                     class="form-control"
                     @change="handleArtImgUpload"
                     :state="Boolean(articleImg)"
-                    v-if="editingArt"
+                    v-if="!editingArt"
                   />
                   <b-form-group
                     label="Article Group"
@@ -162,7 +162,7 @@
                   <QuillEditor
                     ref="quillArticle"
                     theme="snow"
-                    :content="articleForm.content"
+                    v-model:content="articleForm.content"
                     contentType="html"
                   />
                   <button class="submit" id="submitArticle">
@@ -182,26 +182,78 @@
               </button>
               <div id="article-table" v-show="!resourceFormContent">
                 <h4>Resources List</h4>
-                <b-table striped hover :items="resource"></b-table>
+                <!-- Bootstrap table for resources -->
+                <table class="table table-info table-striped table-hover">
+                  <thead style="position: sticky; top: 0" class="table-dark">
+                    <tr>
+                      <th class="header" scope="col">Image</th>
+                      <th class="header" scope="col">Title</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="item in resource"
+                      :key="item.title"
+                      :id="item.title"
+                    >
+                      <td :id="item.title" @click="takeActionRes($event)">
+                        <img
+                          :src="item.link"
+                          style="max-width: 68px; max-height: 48px"
+                          alt=""
+                        />
+                      </td>
+                      <td :id="item.title" @click="takeActionRes($event)">
+                        {{ item.title }}
+                      </td>
+                      <!-- Edit and Delete box -->
+                      <div
+                        class="action-box"
+                        :id="item.title"
+                        v-if="Boolean(selectedArticle == item.title)"
+                      >
+                        <ul>
+                          <li :id="item.title" @click="editArt($event)">
+                            Edit
+                          </li>
+                          <li :id="item.title" @click="delArt($event)">
+                            Delete
+                          </li>
+                        </ul>
+                      </div>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
               <div id="add-article" v-show="resourceFormContent">
-                <form action="#" id="resource-form">
-                  <h4>Resource Form</h4>
+                <form
+                  @submit.prevent="addResource"
+                  action="#"
+                  id="resource-form"
+                >
+                  <h4>{{ resouceFormName }}</h4>
                   <input
                     type="text"
                     class="form-control"
                     placeholder="Title"
                     v-model="resourceForm.title"
+                    :disabled="editingRes"
                   />
-                  <input type="file" class="form-control" />
+                  <input
+                    type="file"
+                    class="form-control"
+                    @change="handleResImgUpload"
+                    :state="Boolean(resourceImg)"
+                    v-if="!editingRes"
+                  />
                   <QuillEditor
                     theme="snow"
+                    ref="quillResource"
                     v-model:content="resourceForm.content"
-                    v-html="resourceForm.content"
                     contentType="html"
                   />
-                  <button id="submitArticle" @click="addResource">
-                    Add Resource
+                  <button class="submit" id="submitArticle">
+                    {{ submitResource }}
                   </button>
                 </form>
               </div>
@@ -222,33 +274,46 @@ export default {
   name: "dashAriticle",
   data() {
     return {
-      submitAriticles: "Submit Article",
-      selectedArticle: "",
-      editingArt: false,
+      // Ui Display Data
       currentContent: true,
       isActive: true,
       articleButton: "Add New",
       resourceButton: "Add New",
       menu: true,
+      // ********************
+      // Article Data
+      // ********************
+      submitAriticles: "Submit Article",
+      selectedArticle: "",
+      editingArt: false,
       articleImg: undefined,
+      articleFormContent: false,
+      articleFormName: "Article Form",
       article: [],
       articleForm: {
-        title: "New Title",
+        title: "New Article",
         file: "",
         content: "<i>Start Typing........... </i>",
         contentHtml: "",
         selectedGroup: "",
         timeToRead: "",
       },
-      articleFormContent: false,
-      articleFormName: "Article Name",
+      // ********************
+      // Resource data
+      // ********************
+      submitResource: "Add Resource",
+      selectedResouce: "",
       resource: [],
-      resourceForm: {
-        title: "New Title",
-        file: "",
-        content: "",
-      },
+      editingRes: false,
+      resourceImg: undefined,
       resourceFormContent: false,
+      resouceFormName: "Resource Form",
+      resourceForm: {
+        title: "New Resource",
+        file: "",
+        content: "<i>Start Typing........... </i>",
+        timeToRead: "",
+      },
     };
   },
   created() {
@@ -270,55 +335,14 @@ export default {
     editor() {
       return this.$refs.quillArticle;
     },
+    editorRes() {
+      return this.$refs.quillResource;
+    },
   },
   methods: {
-    updateContent(hello) {
-      this.articleForm.content = hello;
-      this.editor.setHTML(this.articleForm.content);
-    },
-    takeActionArt(event) {
-      var selected = event.target.id;
-      this.selectedArticle = selected;
-    },
-    editArt(event) {
-      this.articleFormContent = true;
-      var theArticle = event.target.id;
-      this.articleFormName = `Currently Editing ${theArticle}`;
-      this.articleButton = "Go Back";
-      this.submitAriticles = `Update ${theArticle}`;
-      this.editingArt = true;
-      // populate form with database data
-      var articles = this.article;
-      var self = this;
-      // loop through articles
-      for (var i = 0; i < articles.length; i++) {
-        console.log(self.articleForm);
-        if (articles[i].title == theArticle) {
-          this.articleForm.title = articles[i].title;
-          this.articleForm.selectedGroup = articles[i].group;
-          // conversion to template literal
-          this.updateContent(articles[i].content);
-          console.log("article from here");
-          console.log(this.articleForm);
-        }
-      }
-    },
-    submitAriticle() {
-      var select = this.articleForm.content;
-
-      // Calculate words per minute
-      const text = select;
-      const wpm = 225;
-      const words = text.trim().split(/\s+/).length;
-      const time = Math.ceil(words / wpm);
-      // add to data
-      this.articleForm.timeToRead = time;
-      this.articleForm.content = text;
-      console.log(text);
-      console.log(time);
-      // this.$store.dispatch("articles/addArticle", this.articleForm);
-    },
-    addResource() {},
+    // ****************************
+    // Display Functionalities
+    // ****************************
     reduceMenu() {
       var aux_sidebar = document.querySelector(".aux-sidebar");
       var aux_menu = document.querySelector(".aux-menu");
@@ -342,10 +366,10 @@ export default {
       this.articleForm.selectedGroup = "";
       this.articleFormName = "Article Form";
       this.submitAriticles = "Submit Article";
+      this.articleForm.title = "New Article";
       this.editingArt = false;
       var initialContent = "<i> Start Typing ........<I/>";
       this.updateContent(initialContent);
-      // this.articleForm.content = "<p> Start Typing<p/>";
       if (this.articleButton == "Go Back") {
         this.articleButton = "Add New";
       } else if (this.articleButton == "Add New") {
@@ -354,10 +378,52 @@ export default {
     },
     openResource() {
       this.resourceFormContent = !this.resourceFormContent;
+      this.resourceFormName = "Article Form";
+      this.submitAriticles = "Add Resource";
+      this.resourceForm.title = "New Resource";
+      this.editingRes = false;
+      var initialContent = "<i> Start Typing ........<I/>";
+      this.updateResource(initialContent);
       if (this.resourceButton == "Go Back") {
         this.resourceButton = "Add New";
       } else if (this.resourceButton == "Add New") {
         this.resourceButton = "Go Back";
+      }
+    },
+    changeActive() {
+      this.isActive = this.currentContent;
+    },
+    // ****************************
+    // Article Functions
+    // *****************************
+    // Update quillEditor
+    updateContent(x) {
+      this.articleForm.content = x;
+      this.editor.setHTML(this.articleForm.content);
+    },
+    // Get Article to be edited functionality
+    takeActionArt(event) {
+      var selected = event.target.id;
+      this.selectedArticle = selected;
+    },
+    // Edit Article
+    editArt(event) {
+      this.articleFormContent = true;
+      var theArticle = event.target.id;
+      this.articleFormName = `Currently Editing ${theArticle}`;
+      this.articleButton = "Go Back";
+      this.submitArticles = `Update ${theArticle}`;
+      this.editingArt = true;
+      // populate form with database data
+      var articles = this.article;
+      // loop through articles
+      for (var i = 0; i < articles.length; i++) {
+        if (articles[i].title == theArticle) {
+          this.articleForm.title = articles[i].title;
+          this.articleForm.selectedGroup = articles[i].group;
+          // conversion to template literal
+          this.updateContent(articles[i].content);
+        }
       }
     },
     // Handle article image upload
@@ -370,8 +436,79 @@ export default {
         self.articleForm.file = reader.result;
       };
     },
-    changeActive() {
-      this.isActive = this.currentContent;
+    // Submit Article
+    submitAriticle() {
+      var select = this.articleForm.content;
+
+      // Calculate words per minute
+      const text = select;
+      const wpm = 225;
+      const words = text.trim().split(/\s+/).length;
+      const time = Math.ceil(words / wpm);
+      // add to data
+      this.articleForm.timeToRead = time;
+      this.articleForm.content = text;
+      console.log(this.articleForm);
+      // Push to database
+      // this.$store.dispatch("articles/addArticle", this.articleForm);
+    },
+    // ************************
+    // Resources Functionality
+    // ************************
+    // update quillEditor
+    updateResource(x) {
+      this.resourceForm.content = x;
+      this.editorRes.setHTML(this.resourceForm.content);
+    },
+    // Get Resource to be edited functionality
+    takeActionRes(event) {
+      var selected = event.target.id;
+      this.selectedResouce = selected;
+    },
+    // Handle Image Upload Resource
+    handleResImgUpload(e) {
+      const self = this;
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onload = function () {
+        self.resourceForm.file = reader.result;
+      };
+    },
+    // Edit Resource
+    editRes(event) {
+      this.resourceFormContent = true;
+      var theArticle = event.target.id;
+      this.resourceFormName = `Currently Editing ${theArticle}`;
+      this.resourceButton = "Go Back";
+      this.submitResource = `Update ${theArticle}`;
+      this.editingArt = true;
+      // populate form with database data
+      var resource = this.resource;
+      // loop through articles
+      for (var i = 0; i < resource.length; i++) {
+        if (resource[i].title == theArticle) {
+          this.resourceForm.title = resource[i].title;
+          this.resourceForm.selectedGroup = resource[i].group;
+          this.updateResource(resource[i].content);
+        }
+      }
+    },
+    // submit Resource
+    addResource() {
+      // select content
+      var select = this.resourceForm.content;
+      console.log(select);
+      const text = select;
+      const wpm = 225;
+      const words = text.trim().split(/\s+/).length;
+      const time = Math.ceil(words / wpm);
+      // add to data
+      this.resourceForm.timeToRead = time;
+      this.resourceForm.content = text;
+      console.log(this.resourceForm);
+      // push to database
+      // this.$store.dispatch("articles/addResource", this.resourceForm)
     },
   },
   beforeCreate() {},
@@ -517,7 +654,7 @@ li {
   cursor: pointer;
 }
 .submit:hover {
-  background-color: #118ab22f;
+  background-color: #4288a0;
 }
 #submitArticle {
   border: none;
@@ -527,7 +664,7 @@ li {
   color: white;
   margin-top: 16px;
 }
-active {
+.active {
   background-color: #fff;
 }
 </style>
