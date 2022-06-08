@@ -426,6 +426,13 @@ export default {
         }
       }
     },
+    // Delete Article
+    delArt(event) {
+      var theItem = event.target.id;
+      if (confirm(`Are you sure you want to delete ${theItem}`)) {
+        this.$store.dispatch("articles/deleteArticle", theItem);
+      }
+    },
     // Handle article image upload
     handleArtImgUpload(e) {
       const self = this;
@@ -439,7 +446,6 @@ export default {
     // Submit Article
     submitAriticle() {
       var select = this.articleForm.content;
-
       // Calculate words per minute
       const text = select;
       const wpm = 225;
@@ -448,9 +454,8 @@ export default {
       // add to data
       this.articleForm.timeToRead = time;
       this.articleForm.content = text;
-      console.log(this.articleForm);
       // Push to database
-      // this.$store.dispatch("articles/addArticle", this.articleForm);
+      this.$store.dispatch("articles/addArticle", this.articleForm);
     },
     // ************************
     // Resources Functionality
@@ -489,9 +494,15 @@ export default {
       for (var i = 0; i < resource.length; i++) {
         if (resource[i].title == theArticle) {
           this.resourceForm.title = resource[i].title;
-          this.resourceForm.selectedGroup = resource[i].group;
           this.updateResource(resource[i].content);
         }
+      }
+    },
+    // Delete Resource
+    deleteRes(event) {
+      var theItem = event.target.id;
+      if (confirm(`Are you sure you want to delete ${theItem}`)) {
+        this.$store.dispatch("articles/deleteResource", theItem);
       }
     },
     // submit Resource
@@ -508,7 +519,7 @@ export default {
       this.resourceForm.content = text;
       console.log(this.resourceForm);
       // push to database
-      // this.$store.dispatch("articles/addResource", this.resourceForm)
+      this.$store.dispatch("articles/addResource", this.resourceForm);
     },
   },
   beforeCreate() {},

@@ -7,6 +7,7 @@ import {
   collection,
   serverTimestamp,
   getDocs,
+  deleteDoc,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 // Import vue-Toast
@@ -56,6 +57,11 @@ export default {
       var toast = useToast();
       toast.info("Article Added to database");
     },
+    async deleteArticle(_, title) {
+      await deleteDoc(doc(db, "articles", title));
+      const toast = useToast();
+      toast.error(`The Aritcle -- ${title} has been deleted`);
+    },
     async addResource(_, { title, file, content, timeToRead }) {
       var storage = getStorage();
       const storageRef = ref(storage, title);
@@ -72,6 +78,11 @@ export default {
       });
       var toast = useToast();
       toast.info("Resource Added to database");
+    },
+    async deleteResource(_, title) {
+      await deleteDoc(doc(db, "resources", title));
+      const toast = useToast();
+      toast.error(`The Resource -- ${title} has been deleted`);
     },
   },
   mutations: {
