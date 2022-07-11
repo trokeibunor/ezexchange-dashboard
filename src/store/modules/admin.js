@@ -13,6 +13,7 @@ export default {
         name: "",
         email: "",
         loggedIn: false,
+        barCollapsed: true,
       },
     };
   },
@@ -33,6 +34,16 @@ export default {
     admin(state, { user, email }) {
       state.admin.name = user;
       state.admin.email = email;
+    },
+    setBarToFalse(state) {
+      if (state.admin.barCollapsed == true) {
+        state.admin.barCollapsed = false;
+      }
+    },
+    setBarToTrue(state) {
+      if (state.admin.barCollapsed == false) {
+        state.admin.barCollapsed = true;
+      }
     },
   },
   actions: {
@@ -77,6 +88,13 @@ export default {
     logOut({ commit }) {
       commit("loggedOut");
       router.push("/");
+    },
+    // Bar changes
+    barFalse({ commit }) {
+      commit("setBarToFalse");
+    },
+    barTrue({ commit }) {
+      commit("setBarToTrue");
     },
   },
 };

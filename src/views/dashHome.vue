@@ -2,7 +2,7 @@
   <div>
     <div class="fixed-content">
       <!-- sidebar -->
-      <dash-side />
+      <dash-side v-if="this.barSetup == true" />
       <div class="content-holder">
         <div class="dash-hero">
           <!-- nav component -->
@@ -58,16 +58,55 @@
 <script>
 import dashNav from "../components/navigation-component.vue";
 import dashSide from "../components/sidebar-component.vue";
+import { mapState } from "vuex";
 export default {
   name: "dashboardHome",
   components: {
     dashNav,
     dashSide,
   },
+  data() {
+    return {
+      sidebarOptions: true,
+    };
+  },
+  methods: {
+    changeLayout() {
+      const container = document.querySelector(".fixed-content");
+      container.style.gridTemplateColumns = "100%";
+    },
+    reverseLayout() {
+      const container = document.querySelector(".fixed-content");
+      container.style.gridTemplateColumns = "20% 1fr";
+    },
+  },
+  computed: {
+    ...mapState({
+      barSetup: (state) => state.admin.admin.barCollapsed,
+    }),
+  },
+  watch: {
+    barSetup(newVal, oldValue) {
+      console.log(`the new val is ${newVal}, while the old val is ${oldValue}`);
+      if (newVal == false) {
+        this.changeLayout();
+      } else if (newVal == true) {
+        this.reverseLayout();
+      }
+    },
+  },
+  mounted() {
+    console.log(this.statebarOpened);
+  },
 };
 </script>
 
 <style lang="scss" scoped>
+$media-desktop: "only screen and (max-width : 1024px)";
+$media-tablet: "only screen and (max-width : 768px)";
+$media-mobile: "only screen and (max-width : 600px)";
+$media-mobile-sm: "only screen and (max-width : 480px)";
+$media-desktop-strict: "only screen and (min-width: 768px)";
 .fixed-content {
   display: grid;
   grid-template-columns: 20% 1fr;

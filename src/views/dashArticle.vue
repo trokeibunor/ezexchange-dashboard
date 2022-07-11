@@ -361,6 +361,9 @@ export default {
       aux_sidebar.style.width = "100%";
       this.menu = true;
     },
+    changeActive() {
+      this.isActive = this.currentContent;
+    },
     openArticle() {
       this.articleFormContent = !this.articleFormContent;
       this.articleForm.selectedGroup = "";
@@ -389,9 +392,6 @@ export default {
       } else if (this.resourceButton == "Add New") {
         this.resourceButton = "Go Back";
       }
-    },
-    changeActive() {
-      this.isActive = this.currentContent;
     },
     // ****************************
     // Article Functions

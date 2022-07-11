@@ -2,10 +2,20 @@
   <!-- nav component -->
   <nav>
     <div class="first">
-      <button>
-        <!-- Hamburger image -->
+      {{ this.barSetup }}
+      <button v-if="this.barSetup == true" @click="sidebarFlipper">
+        <!-- Hamburger image open -->
         <img
           src="../assets/images/dashHam.svg
+          "
+          alt=""
+          srcset=""
+        />
+      </button>
+      <button v-if="this.barSetup == false" @click="sidebarFlipper">
+        <!-- Hamburger image Close -->
+        <img
+          src="../assets/images/dashHamClose.svg
           "
           alt=""
           srcset=""
@@ -25,6 +35,8 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+import { mapActions } from "vuex";
 export default {
   name: "dashNav",
   data() {
@@ -38,10 +50,25 @@ export default {
       this.logger = !this.logger;
     },
     logOut() {
-      this.$store.dispatch("admin/logOut");
+      this.loggedOut;
+    },
+    sidebarFlipper() {
+      if (this.barSetup == true) {
+        this.barFalse;
+      } else {
+        this.barTrue;
+      }
     },
   },
   computed: {
+    ...mapState({
+      barSetup: (state) => state.admin.admin.barCollapsed,
+    }),
+    ...mapActions({
+      loggedOut: "admin/logOut",
+      barFalse: "admin/barFalse",
+      barTrue: "admin/barTrue",
+    }),
     nameInit() {
       return this.name;
     },
